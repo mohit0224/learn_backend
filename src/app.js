@@ -11,7 +11,7 @@ app.use(
   })
 );
 
-// setup express json, urlencoded, static files config and cookieparser config
+// ! setup express json, urlencoded, static files config and cookieparser config
 
 app.use(express.json({ limit: "20kb" }));
 app.use(
@@ -23,4 +23,11 @@ app.use(
 app.use(express.static("public"));
 app.use(cookieParser());
 
-export { app };
+// ! import router
+import userRouter from "./routes/user.routes.js";
+
+// ! routes declaration
+// ? https:localhost:8000/api/v1/
+app.use("/api/v1/users", userRouter);
+
+export default app;
