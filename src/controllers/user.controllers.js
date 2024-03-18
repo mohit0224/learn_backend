@@ -29,9 +29,10 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     //! step 3 :: check user existence
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ username }, { email }],
     });
+
     if (existedUser) {
         throw new apiError(
             409,
@@ -40,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     //! step 4 :: check coverImage or avtar
-    const avtarLocalPath = req.files?.avtar[0]?.path;
+    const avtarLocalPath = req.files?.avatar[0]?.path;
     const coverImageLocalPath = req.files?.coverImage[0]?.path;
     if (!avtarLocalPath) {
         throw new apiError(400, "Avtar is required !!");
@@ -49,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //! step 5 :: upload coverImage or avtar on cloudinary
     const avtarCloud = await uploadOnCloudinary(avtarLocalPath);
     const coverImageCloud = await uploadOnCloudinary(coverImageLocalPath);
-    if (avtarCloud) {
+    if (!avtarCloud) {
         throw new apiError(400, "Avtar is required !!");
     }
 
@@ -59,8 +60,8 @@ const registerUser = asyncHandler(async (req, res) => {
         username: username.toLowerCase(),
         email,
         password,
-        avtar: avtarCloud.url,
-        coverImage: coverImageCloud?.url || "",
+        avatar: avtarCloud.secure_url,
+        coverImage: coverImageCloud?.secure_url || "",
     });
 
     //! step 7 :: check user created or not
