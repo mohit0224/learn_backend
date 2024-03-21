@@ -42,17 +42,25 @@ const registerUser = asyncHandler(async (req, res) => {
 
     //! step 4 :: check coverImage or avtar
     const avtarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    let coverImageLocalPath;
+    if (
+        req.files &&
+        Array.isArray(req.files.coverImage) &&
+        req.files.coverImage.length > 0
+    )
+        coverImageLocalPath = req.files.coverImage[0].path;
+
     if (!avtarLocalPath) {
         throw new apiError(400, "Avtar is required !!");
     }
 
     //! step 5 :: upload coverImage or avtar on cloudinary
     const avtarCloud = await uploadOnCloudinary(avtarLocalPath);
-    const coverImageCloud = await uploadOnCloudinary(coverImageLocalPath);
-    if (!avtarCloud) {
-        throw new apiError(400, "Avtar is required !!");
-    }
+
+    let coverImageCloud;
+    if (coverImageLocalPath)
+        coverImageCloud = await uploadOnCloudinary(coverImageLocalPath);
+    if (!avtarCloud) throw new apiError(400, "Avtar is required !!");
 
     //! step 6 :: create user object upload on db
     const newUser = await User.create({

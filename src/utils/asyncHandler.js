@@ -1,8 +1,8 @@
 // make high order funtion with promise
 const asyncHandler = (request) => {
-  return (req, res, next) => {
-    Promise.resolve(request(req, res, next)).catch((err) => next(err));
-  };
+    return (req, res, next) => {
+        Promise.resolve(request(req, res, next)).catch((err) => next(err));
+    };
 };
 
 export default asyncHandler;
