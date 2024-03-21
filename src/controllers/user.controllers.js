@@ -6,6 +6,24 @@ import {
 } from "../utils/index.js";
 import User from "../models/user.model.js";
 
+const generateAccessAndRefreshToken = async (userId) => {
+    try {
+        const user = await User.findById(userId);
+        const accessToken = await user.generateAccessToken();
+        const refreshToken = await user.generateRefreshToken();
+
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false });
+
+        return { accessToken, refreshToken };
+    } catch (error) {
+        throw new apiError(
+            500,
+            "Something went wrong while generating token !!"
+        );
+    }
+};
+
 const registerUser = asyncHandler(async (req, res) => {
     //? get user information from frontend.
     //? check validations.
@@ -89,4 +107,60 @@ const registerUser = asyncHandler(async (req, res) => {
         );
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+    // ? get data from user request.
+    // ? check user is existing or not?. ( email, userName )
+    // ? check the password is match or not.
+    // ? if password is matchen then create ( access token, refresh token )
+    // ? send secure token via cookies
+
+    // step 1 :: get data from user request
+    const { username, email, password } = req.body;
+    if (!username && !email)
+        throw new apiError(401, "Username or email is required !!");
+
+    // step 2 :: check user is existing or not. ( email, userName )
+    const existingUser = await User.findOne({
+        $or: [{ username }, { email }],
+    });
+    if (!existingUser) throw new apiError(404, "User not found !!");
+
+    // step 3 :: check existing user password
+    const passwordCheck = await existingUser.isPasswordCorrect(password);
+    if (!passwordCheck) throw new apiError(401, "Invalid user credentials !!");
+
+    // step 4 :: create access and refresh token.
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+        existingUser._id
+    );
+
+    // step 5 :: set access and refresh token in cookies.
+    // updated user data with refresh token.
+
+    const updatedUser = await User.findById(existingUser._id).select(
+        "-password -refreshToken"
+    );
+
+    const option = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    return res
+        .status(200)
+        .cookie("access_token", accessToken, option)
+        .cookie("refresh_token", refreshToken, option)
+        .json(
+            new apiResponse(
+                200,
+                {
+                    user: updatedUser,
+                    accessToken,
+                    refreshToken,
+                },
+                "user created successfully !!"
+            )
+        );
+});
+
+export { registerUser, loginUser };

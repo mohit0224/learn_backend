@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controllers.js";
+import { loginUser, registerUser } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/index.js";
 
 const router = Router();
+// ? https:localhost:8000/api/v1/users
 
 router.route("/").post(
     upload.fields([
@@ -17,5 +18,8 @@ router.route("/").post(
     ]),
     registerUser
 );
+
+// ? https:localhost:8000/api/v1/users/login
+router.route("/login").post(loginUser);
 
 export default router;

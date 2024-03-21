@@ -68,7 +68,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 // ! how to create access tokens and refresh tokens
 // ? create new mongoose method to access token
 userSchema.methods.generateAccessToken = function () {
-    Jwt.sign(
+    return Jwt.sign(
         {
             _id: this._id,
             email: this.email,
@@ -83,7 +83,7 @@ userSchema.methods.generateAccessToken = function () {
 
 // ? create new mongoose method to refresh token
 userSchema.methods.generateRefreshToken = function () {
-    Jwt.sign(
+    return Jwt.sign(
         {
             _id: this._id,
         },
