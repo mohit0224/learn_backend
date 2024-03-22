@@ -1,6 +1,10 @@
 import { Router } from "express";
-import { loginUser, registerUser } from "../controllers/user.controllers.js";
-import { upload } from "../middlewares/index.js";
+import {
+    loggedOut,
+    loginUser,
+    registerUser,
+} from "../controllers/user.controllers.js";
+import { upload, verifyJWT } from "../middlewares/index.js";
 
 const router = Router();
 // ? https:localhost:8000/api/v1/users
@@ -21,5 +25,8 @@ router.route("/").post(
 
 // ? https:localhost:8000/api/v1/users/login
 router.route("/login").post(loginUser);
+
+// ? https:localhost:8000/api/v1/users/logout
+router.route("/logout").post(verifyJWT, loggedOut);
 
 export default router;

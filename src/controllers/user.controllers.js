@@ -1,10 +1,10 @@
+import User from "../models/user.model.js";
 import {
     asyncHandler,
     apiError,
     apiResponse,
     uploadOnCloudinary,
 } from "../utils/index.js";
-import User from "../models/user.model.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -24,6 +24,9 @@ const generateAccessAndRefreshToken = async (userId) => {
     }
 };
 
+//! ----------------------------------------------------------------
+//! -----------------register user----------------------------------
+//! ----------------------------------------------------------------
 const registerUser = asyncHandler(async (req, res) => {
     //? get user information from frontend.
     //? check validations.
@@ -107,6 +110,9 @@ const registerUser = asyncHandler(async (req, res) => {
         );
 });
 
+//! ----------------------------------------------------------------
+//! -----------------login user-------------------------------------
+//! ----------------------------------------------------------------
 const loginUser = asyncHandler(async (req, res) => {
     // ? get data from user request.
     // ? check user is existing or not?. ( email, userName )
@@ -163,4 +169,32 @@ const loginUser = asyncHandler(async (req, res) => {
         );
 });
 
-export { registerUser, loginUser };
+//! ----------------------------------------------------------------
+//! -----------------logout user------------------------------------
+//! ----------------------------------------------------------------
+const loggedOut = asyncHandler(async (req, res) => {
+   const data= await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: undefined,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+    const option = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    return res
+        .status(200)
+        .clearCookie("access_token", option)
+        .clearCookie("refresh_token", option)
+        .json(new apiResponse(200, data, "user logged out successfully !!"));
+});
+
+export { registerUser, loginUser, loggedOut };
