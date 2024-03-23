@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
     changePassword,
+    getCurrentUser,
     loggedOut,
     loginUser,
     refreshUserToken,
@@ -24,6 +25,9 @@ router.route("/").post(
     ]),
     registerUser
 );
+
+// ? https:localhost:8000/api/v1/users
+router.route("/").get(verifyJWT,getCurrentUser);
 
 // ? https:localhost:8000/api/v1/users/login
 router.route("/login").post(loginUser);

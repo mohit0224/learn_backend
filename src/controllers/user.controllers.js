@@ -257,8 +257,11 @@ const changePassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
     if (!oldPassword && !newPassword)
         throw new apiError(401, "Enter old and new password !!");
-    else if (oldPassword===newPassword)
-        throw new apiError(401, "New password cann't be same as old password !!");
+    else if (oldPassword === newPassword)
+        throw new apiError(
+            401,
+            "New password cann't be same as old password !!"
+        );
     else if (!oldPassword)
         throw new apiError(401, "Old password is required !!");
     else if (!newPassword)
@@ -274,4 +277,18 @@ const changePassword = asyncHandler(async (req, res) => {
     res.status(200).json(new apiResponse(201, {}, "Password changed !!"));
 });
 
-export { registerUser, loginUser, loggedOut, refreshUserToken, changePassword };
+//! ----------------------------------------------------------------
+//! -----------------get current user-------------------------------
+//! ----------------------------------------------------------------
+const getCurrentUser = asyncHandler(async (req, res) =>
+    res.status(200).json(new apiResponse(201, req.user, "Current user !!"))
+);
+
+export {
+    registerUser,
+    loginUser,
+    loggedOut,
+    refreshUserToken,
+    changePassword,
+    getCurrentUser,
+};
