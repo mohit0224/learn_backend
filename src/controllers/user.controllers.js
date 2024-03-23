@@ -284,6 +284,39 @@ const getCurrentUser = asyncHandler(async (req, res) =>
     res.status(200).json(new apiResponse(201, req.user, "Current user !!"))
 );
 
+//! ----------------------------------------------------------------
+//! -----------------update account details-------------------------
+//! ----------------------------------------------------------------
+const updateAccount = asyncHandler(async (req, res) => {
+    const { fullName, username, email } = req.body;
+    if (!fullName && !username && !email)
+        throw new apiError(401, "Please enter the feilds !!");
+
+    const existedUserByUsername = await User.findOne({ username });
+    if (existedUserByUsername)
+        throw new apiError(401, `User with ( ${username} ) already exists`);
+
+    const existedUserByEmail = await User.findOne({ email });
+    if (existedUserByEmail)
+        throw new apiError(401, `User with ( ${email} ) already exists`);
+
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                fullName: fullName || req.user.fullName,
+                username: username || req.user.username,
+                email: email || req.user.email,
+            },
+        },
+        { new: true }
+    );
+
+    res.status(200).json(
+        new apiResponse(200, { updatedUser }, "Successfully updated !!")
+    );
+});
+
 export {
     registerUser,
     loginUser,
@@ -291,4 +324,5 @@ export {
     refreshUserToken,
     changePassword,
     getCurrentUser,
+    updateAccount,
 };

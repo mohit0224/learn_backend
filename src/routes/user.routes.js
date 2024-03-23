@@ -6,6 +6,7 @@ import {
     loginUser,
     refreshUserToken,
     registerUser,
+    updateAccount,
 } from "../controllers/user.controllers.js";
 import { upload, verifyJWT } from "../middlewares/index.js";
 
@@ -26,9 +27,6 @@ router.route("/").post(
     registerUser
 );
 
-// ? https:localhost:8000/api/v1/users
-router.route("/").get(verifyJWT,getCurrentUser);
-
 // ? https:localhost:8000/api/v1/users/login
 router.route("/login").post(loginUser);
 
@@ -40,5 +38,11 @@ router.route("/refresh-token").post(refreshUserToken);
 
 // ? https:localhost:8000/api/v1/users/change-password
 router.route("/change-password").post(verifyJWT, changePassword);
+
+// ? https:localhost:8000/api/v1/users
+router.route("/").get(verifyJWT, getCurrentUser);
+
+// ? https:localhost:8000/api/v1/users
+router.route("/").patch(verifyJWT, updateAccount);
 
 export default router;
