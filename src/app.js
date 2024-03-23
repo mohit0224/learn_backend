@@ -22,11 +22,15 @@ app.use(
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// ! import router
+// ! import router ----------------------------------------------------------------
 import userRouter from "./routes/user.routes.js";
+import subscriptionRouter from "./routes/subscription.routes.js";
 
-// ! routes declaration
-// ? https:localhost:8000/api/v1/
+// ! routes declaration -----------------------------------------------------------
+// ? https:localhost:8000/api/v1/users
 app.use("/api/v1/users", userRouter);
+
+// ? https:localhost:8000/api/v1/subscriptions
+app.use("/api/v1/subscription", subscriptionRouter);
 
 export default app;
