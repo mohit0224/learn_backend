@@ -30,7 +30,7 @@ import subscriptionRouter from "./routes/subscription.routes.js";
 // ? https:localhost:8000/api/v1/users
 app.use("/api/v1/users", userRouter);
 
-// ? https:localhost:8000/api/v1/subscriptions
+// ? https:localhost:8000/api/v1/subscription
 app.use("/api/v1/subscription", subscriptionRouter);
 
 export default app;
